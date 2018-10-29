@@ -19,7 +19,7 @@ class Player:
 
 	def deposit(self):
 		rv = conn.validateaddress(foo)
-		rv.isvalid:
+		if rv.isvalid:
   		  print "The address that you provided is valid"
 		else:
   		  print "The address that you provided is invalid, please correct"	
@@ -37,58 +37,60 @@ class Player:
 
 
 def main():
-	player_1 = Player()
-	player_2 = Player()
-	player_3 = Player()
+	while True:
+		# Initializing players
+		player_1 = Player()
+		player_2 = Player()
+		player_3 = Player()
 
-	# Button Press stubs
+		# Button Press stubs
+		
+		# Deposits
+		player_1_deposit = 0
+		player_2_deposit = 0
+		player_3_deposit = 0
+
+		# Deal
+		player_1_deal = 0
+		player_2_deal = 0
+		player_3_deal = 0
+		
+		# Stay
+		player_1_stay = 0
+		player_2_stay = 0
+		player_3_stay = 0
+
+		# Deposit functions
+		if player_1_deposit == 1:
+			player_1.deposit()
+		if player_2_deposit == 1:
+			player_2.deposit()
+		if player_3_deposit == 1:
+			player_3.deposit()
+
+		# Deal
+		if player_1_deal == 1:
+			player_1.deal()
+		if player_2_deal == 1:
+			player_2.deal()
+		if player_3_deal == 1:
+			player_3.deal()
+
+		# Stay
+		if player_1_stay == 1:
+			player_1.stay()
+		if player_2_stay == 1:
+			player_2.stay()
+		if player_3_stay == 1:
+			player_3.stay()
+
 	
-	# Deposits
-	player_1_deposit = 0:
-	player_2_deposit = 0:
-	player_3_deposit = 0:
-
-	# Deal
-	player_1_deal = 0:
-	player_2_deal = 0:
-	player_3_deal = 0:
-	
-	# Stay
-	player_1_stay = 0:
-	player_2_stay = 0:
-	player_3_stay = 0:
-
-	# Deposit functions
-	if player_1_deposit == 1:
-		player_1.deposit()
-	if player_2_deposit == 1:
-		player_2.deposit()
-	if player_3_deposit == 1:
-		player_3.deposit()
-
-	# Deal
-	if player_1_deal == 1:
-		player_1.deal()
-	if player_2_deal == 1:
-		player_2.deal()
-	if player_3_deal == 1:
-		player_3.deal()
-
-	# Stay
-	if player_1_stay == 1:
-		player_1.stay()
-	if player_2_stay == 1:
-		player_2.stay()
-	if player_3_stay == 1:
-		player_3.stay()
-
-	
-	if player_1.gameOver == True:
-		player_1.withdraw()
-	if player_2_gameOver == True:
-		player_2.withdraw()
-	if player_3_gameOver == True:
-		player_3.withdraw()
+		if player_1.gameOver == True:
+			player_1.withdraw()
+		if player_2.gameOver == True:
+			player_2.withdraw()
+		if player_3.gameOver == True:
+			player_3.withdraw()
 
 
 if __name__ == "__main__":
