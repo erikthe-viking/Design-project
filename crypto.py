@@ -6,10 +6,7 @@ import jsonrpc
 
 #conn = dogecoinrpc.connect_to_local() # Connects to local dogecoin wallet instance
 
-
-# Print Balance
-#print "Your balance is %f" % (conn.getbalance(),)
-
+ 
 class Player:
 	address = ""
 	bet_ammount = 0
@@ -24,17 +21,18 @@ class Player:
 		else:
   		  print "The address that you provided is invalid, please correct"	
 	 
-	def withdraw():
+	def withdraw(self):
 		conn.sendtoaddress(address,self.winning) 
-	def stay():
+	def stay(self):
 		pass
-	def deal():
+	def deal(self):
 		pass
-	def calculate_winning():
-		
+	def calculate_winning(self):
 		self.winnings = bet_amount * 1.5
-
-
+	def print_balance(self):
+		#print "Your balance is %f" % (conn.getbalance(),)
+		
+		pass
 
 def main():
 	while True:
