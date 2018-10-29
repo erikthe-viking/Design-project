@@ -45,10 +45,14 @@ def main():
 	player_1_deposit = 1:
 	player_1_deposit = 1:
 	
+
+	player_1_deposit = 0:
+	player_2_deposit = 0:
+	player_3_deposit = 0:
 	
-	
-		
-	
+	if player_1_deposit == 1 or player_2_deposit == 1 or player_3_deposit == 1:
+
+
 
 if __name__ == "__main__":
     main()
