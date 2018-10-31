@@ -1,46 +1,60 @@
-import jsonrpc 
-
-#access = ServiceProxy("http://user:password@127.0.0.1:8332")
-#access.getinfo()
-#access.listreceivedbyaddress(6)
+#from jsonrpc.proxy import JSONRPCProxy
+#from jsonrpc import ServiceProxy
+import dogecoinrpc
 
 #conn = dogecoinrpc.connect_to_local() # Connects to local dogecoin wallet instance
-
+conn = dogecoinrpc.connect_to_local()
  
 class Player:
-	address = ""
+
+	address = "D6PTaJLdMj1zfafP9Sep286uGHHusgLNCT"
 	bet_ammount = 0
-	winnings = 0
+	winnings = 1
 	win_lose = False
 	gameOver = False
 
+	def print_connection_info(self):
+		
+		info = conn.getinfo()
+		balan = conn.getbalance()
+		count = conn.getconnectioncount()
+		recieved = conn.listreceivedbyaddress()
+		transact = conn.listtransactions()
+
+		print "Balance:", balan
+		print "Connection Count:", count
+		print "Recieved:", recieved
+		print "Transactions:", transact
+
 	def deposit(self):
-		rv = conn.validateaddress(foo)
-		if rv.isvalid:
-  		  print "The address that you provided is valid"
-		else:
-  		  print "The address that you provided is invalid, please correct"	
-	 
+		pass
+		
 	def withdraw(self):
-		conn.sendtoaddress(address,self.winning) 
+		rv = conn.validateaddress(self.address)
+		balan = conn.getbalance()
+		if rv.isvalid and self.winnings <= balan:
+  		  print "The withdrawl address is valid"
+		  conn.sendtoaddress(self.address,self.winnings) 
+		else:
+  		  print "Address or Balance is not valid "
+		 
 	def stay(self):
 		pass
 	def deal(self):
 		pass
 	def calculate_winning(self):
 		self.winnings = bet_amount * 1.5
-	def print_balance(self):
-		#print "Your balance is %f" % (conn.getbalance(),)
-		
-		pass
-
+ 
 def main():
-	while True:
+
+	#while True:
 		# Initializing players
 		player_1 = Player()
 		player_2 = Player()
 		player_3 = Player()
-
+		
+		player_1.print_connection_info()
+		player_1.withdraw()
 		# Button Press stubs
 		
 		# Deposits
@@ -93,3 +107,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
