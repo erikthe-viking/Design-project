@@ -1,6 +1,7 @@
 #from bit import key
 from bit import PrivateKeyTestnet
 from bit.network import get_fee, get_fee_cached, NetworkAPI, satoshi_to_currency
+# https://tinkerboarding.co.uk/wiki/index.php/GPIO#Python GPIO
 
 # Test Net https://live.blockcypher.com/btc-testnet/
 class Player:
@@ -11,19 +12,18 @@ class Player:
     winnings = 1
     win_lose = False
     gameOver = False
-    balance = 0
+    balance = 10
 
     def print_connection_info(self):
         a = PrivateKeyTestnet(self.key_val)
         x = a.get_transactions()
-        self.balance = a.balance
-        print("Balance: ", a.balance)
+        self.balance = a.get_balance('btc')
+        print("Balance: ", self.balance)
         print("Address: ", a.address)
         print("Return Address: ",self.return_address)
         print("Key Value: ", self.key_val)
         print("Previous Transactions: ", x)
-      #  z = PrivateKeyTestnet.prepare_transaction('mfhndBrGKSXuLgd8RbWcxkhQGSBqwQXVF2', [('92DTyQmsrsy4yWUvHpdyjPsF7WxDd6E13g43DXnyTthF3UrgfS3', 1, 'jpy')])
-       # print(z)
+ 
 
     def deposit(self):
         key_class = PrivateKeyTestnet(self.key_val)
@@ -37,17 +37,18 @@ class Player:
             
 
     def withdraw(self):
-        rv = conn.validateaddress(self.address)
+ 
         key = PrivateKeyTestnet(self.key_val)
 
         if self.winnings <= self.balance:
             print ("The withdrawl address is valid")
-            key.create_transaction([(self.return_address, self.winnings, 'jpy')])
+            key.create_transaction([(self.return_address, self.winnings, 'usd')])
         else:
             print ("Not in enough coins in balance")
+
     def calculate_winning(self):
         self.winnings = bet_amount * 1.5
-        
+
     def stay(self):
         pass
     def deal(self):
