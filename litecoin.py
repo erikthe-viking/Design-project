@@ -1,4 +1,6 @@
-#from bit import key
+# THE BIT LIBRARY IS NEEDED https://github.com/ofek/bit
+#from coinkit import BitcoinPublicKey
+from pybitcoin import BlockcypherClient
 from bit import PrivateKeyTestnet
 from bit.network import get_fee, get_fee_cached, NetworkAPI, satoshi_to_currency
 # https://tinkerboarding.co.uk/wiki/index.php/GPIO#Python GPIO
@@ -17,8 +19,9 @@ class Player:
     def print_connection_info(self):
         a = PrivateKeyTestnet(self.key_val)
         x = a.get_transactions()
-        self.balance = a.get_balance('btc')
-        print("Balance: ", self.balance)
+        ## print(test.address)
+        self.balance = a.get_balance('usd')
+        print("Balance: $", self.balance)
         print("Address: ", a.address)
         print("Return Address: ",self.return_address)
         print("Key Value: ", self.key_val)
