@@ -1,8 +1,14 @@
 # THE BIT LIBRARY IS NEEDED https://github.com/ofek/bit
 #from coinkit import BitcoinPublicKey
-from pybitcoin import BlockcypherClient
+#from pybitcoin import BlockcypherClient
 from bit import PrivateKeyTestnet
 from bit.network import get_fee, get_fee_cached, NetworkAPI, satoshi_to_currency
+import ASUS.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
 # https://tinkerboarding.co.uk/wiki/index.php/GPIO#Python GPIO
 
 # Test Net https://live.blockcypher.com/btc-testnet/
@@ -14,7 +20,8 @@ class Player:
     winnings = 1
     win_lose = False
     gameOver = False
-    balance = 10
+    balance = 10	
+
 
     def print_connection_info(self):
         a = PrivateKeyTestnet(self.key_val)
@@ -59,6 +66,29 @@ class Player:
   
 
 def main():
+
+	# Button GPIO pins
+	GPIO.setup(3,GPIO.IN)# Player 1 blue
+	GPIO.setup(5,GPIO.IN)# Player 1 yellow
+	GPIO.setup(7,GPIO.IN)# Player 1 white
+	GPIO.setup(11,GPIO.IN)# Player 2 blue
+	GPIO.setup(13,GPIO.IN)# Player 2 yellow
+	GPIO.setup(15,GPIO.IN)# Player 2 white
+	GPIO.setup(19,GPIO.IN)# Player 3 blue
+	GPIO.setup(21,GPIO.IN)# Player 3 yellow
+	GPIO.setup(23,GPIO.IN)# Player 3 white
+
+	Player_1_blue = GPIO.input(3)
+	Player_1_yellow = GPIO.input(5)
+	Player_1_white = GPIO.input(7)
+	Player_2_blue = GPIO.input(11)
+	Player_2_yellow = GPIO.input(13)
+	Player_2_white = GPIO.input(15)
+	Player_3_blue = GPIO.input(19)
+	Player_3_yellow = GPIO.input(21)
+	Player_3_white = GPIO.input(23)
+
+
     #while True:
         # Initializing players
     player_1 = Player()
