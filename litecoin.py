@@ -17,9 +17,10 @@ class Player:
 
 	return_address = 'mfhndBrGKSXuLgd8RbWcxkhQGSBqwQXVF2'
 	key_val = '92DTyQmsrsy4yWUvHpdyjPsF7WxDd6E13g43DXnyTthF3UrgfS3'
-	bet_ammount = 0
+	bet_amount = 0
 	winnings = 1
-	win_lose = False
+	# 0 = still playing, 1 = win, 2 = lose, 3 = even, 4 = blackjack
+	win_lose = 0
 	gameOver = False
 	balance = 10	
 	score = 0
@@ -52,19 +53,48 @@ class Player:
 		key = PrivateKeyTestnet(self.key_val)
 
 		if self.winnings <= self.balance:
-			print ("The withdrawl address is valid")
+			print ("The withdrawal address is valid")
 			key.create_transaction([(self.return_address, self.winnings, 'usd')])
 		else:
 			print ("Not in enough coins in balance")
 
 	def calculate_winning(self):
-		self.winnings = bet_amount * 1.5
+	
+		if (win_lose == 4):  # blackjack
+			self.winnings = bet_amount + (bet_amount * 1.5)
+		elif (win_lose == 3):  # even
+			self.winnings = bet_amount
+		elif (win_lose == 1):  # win
+			self.winnings = bet_amount * 2
+		else:  # lose
+			self.winnings = 0
 
 	def stay(self):
 		pass
-	def hit(self):
-		pass
-  
+		
+	def hit(self, card_value):
+		
+		score = score + card_value
+		if (score == 21)
+			gameOver = True
+		elif (score > 21)
+			gameOver = True
+		else
+			pass
+			
+	def gameover(self):
+		
+		if (score == dealer_hand):
+			win_lose = 3  # blackjack
+			calculate_winning()
+		elif (win_lose == 4):  # even
+			calculate_winning()
+		elif (score > dealer_hand && score <= 21):
+			win_lose = 1  # win
+			calculate_winning()
+		else:
+			win_lose = 2  # lose
+			calculate_winning()
 
 def main():
 
@@ -140,4 +170,3 @@ def main():
 					
 if __name__ == "__main__":
     main()
-
