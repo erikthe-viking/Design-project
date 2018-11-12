@@ -24,14 +24,16 @@ class Player:
 	gameOver = False
 	balance = 10	
 	score = 0
+	player_num = 1 # default
+	a = PrivateKeyTestnet(self.key_val)
 
 	def print_connection_info(self):
-		a = PrivateKeyTestnet(self.key_val)
+		
 		x = a.get_transactions()
 		## print(test.address)
 		self.balance = a.get_balance('usd')
 		print("Balance: $", self.balance)
-		print("Address: ", a.address)
+		print("Address: ", self.a.address)
 		print("Return Address: ",self.return_address)
 		print("Key Value: ", self.key_val)
 		print("Previous Transactions: ", x)
@@ -72,26 +74,26 @@ class Player:
 	def stay(self):
 		pass
 		
-	def hit(self, card_value):
+	def hit(self, hand):
 		
-		score = score + card_value
+		score = list(hand)
 		if (score == 21):
 			gameOver = True
 		elif (score > 21):
 			gameOver = True
 		else:
 			pass
-			
+		
 	def gameover(self):
 		
-		if (score == dealer_hand):
+		if (score == Dealer.score):
 			win_lose = 3  # blackjack
 			calculate_winning()
 			balance = balance + self.winnings
 		elif (win_lose == 4):  # even
 			calculate_winning()
 			balance = balance + self.winnings
-		elif (score > dealer_hand and score <= 21):
+		elif (score > Dealer.score and score <= 21):
 			win_lose = 1  # win
 			calculate_winning()
 			balance = balance + self.winnings
@@ -99,6 +101,20 @@ class Player:
 			win_lose = 2  # lose
 			calculate_winning()
 			balance = balance + self.winnings
+
+class Dealer:
+
+	return_address = 'mfhndBrGKSXuLgd8RbWcxkhQGSBqwQXVF2'
+	key_val = '92DTyQmsrsy4yWUvHpdyjPsF7WxDd6E13g43DXnyTthF3UrgfS3'
+	gameOver = False
+	score = 0
+	
+	def hit(self, hand):
+		
+		score = list(hand)
+		
+		if (score <= 17):
+			hit()
 
 def main():
 
