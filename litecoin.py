@@ -75,11 +75,11 @@ class Player:
 	def hit(self, card_value):
 		
 		score = score + card_value
-		if (score == 21)
+		if (score == 21):
 			gameOver = True
-		elif (score > 21)
+		elif (score > 21):
 			gameOver = True
-		else
+		else:
 			pass
 			
 	def gameover(self):
