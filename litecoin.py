@@ -87,14 +87,18 @@ class Player:
 		if (score == dealer_hand):
 			win_lose = 3  # blackjack
 			calculate_winning()
+			balance = balance + self.winnings
 		elif (win_lose == 4):  # even
 			calculate_winning()
+			balance = balance + self.winnings
 		elif (score > dealer_hand and score <= 21):
 			win_lose = 1  # win
 			calculate_winning()
+			balance = balance + self.winnings
 		else:
 			win_lose = 2  # lose
 			calculate_winning()
+			balance = balance + self.winnings
 
 def main():
 
