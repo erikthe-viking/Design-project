@@ -89,7 +89,7 @@ class Player:
 			calculate_winning()
 		elif (win_lose == 4):  # even
 			calculate_winning()
-		elif (score > dealer_hand && score <= 21):
+		elif (score > dealer_hand and score <= 21):
 			win_lose = 1  # win
 			calculate_winning()
 		else:
