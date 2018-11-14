@@ -112,7 +112,6 @@ class Dealer:
 	def hit(self, hand):
 		
 		score = list(hand)
-		
 		if (score <= 17):
 			hit()
 
