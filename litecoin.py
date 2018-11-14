@@ -6,6 +6,7 @@ from bit.network import get_fee, get_fee_cached, NetworkAPI, satoshi_to_currency
 import ASUS.GPIO as GPIO
 import time
 import os
+from itertools import cycle
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -24,7 +25,7 @@ class Player:
 	gameOver = False
 	balance = 10	
 	score = 0
-	player_num = 1 # default
+	hand_values = [None] * 10
 	a = PrivateKeyTestnet(self.key_val)
 
 	def print_connection_info(self):
@@ -76,13 +77,33 @@ class Player:
 		
 	def hit(self, hand):
 		
-		score = list(hand)
+		# hand is a string that returns all players' cards (ex. "Player 1: A 10 \n Player 2: 4 J 6 \n Player 3: 10 K")
+		# need to parse string and turn each player's cards into a list
+		self.hand_values = list(hand)  # temp
+		score = sum(self.hand_values)
 		if (score == 21):
 			gameOver = True
 		elif (score > 21):
 			gameOver = True
 		else:
-			pass
+			print("player x score: {0}".format(score))
+	
+	def initial_deal(self, hand, player_num):
+		
+		# hand is a string that returns all players' first two cards (ex. "Player 1: A 10 \nPlayer 2: 4 J \nPlayer 3: 10 K ")
+		# need to parse string and turn each player's cards into a list
+		if (player_num == 1):
+			hand, sep, tail = hand.partition('Player 2: ')
+			head, sep, hand = hand.partition(': ')
+		elif (player_num == 2):
+		elif (player_num == 3):
+		self.hand_values = list(hand)  # temp
+		score = sum(self.hand_values)
+		if (score == 21):
+			gameOver = True
+		else:
+			print("player x score: {1}".format(score))
+		
 		
 	def gameover(self):
 		
@@ -139,12 +160,27 @@ def main():
 	Player_3_stay = GPIO.input(21)
 	Player_3_withdraw = GPIO.input(23)
 
+	img_rec = "Player 1: A Q\nPlayer2: J 5\nPlayer 3: 7 2"
 
     #while True:
         # Initializing players
 	player_1 = Player()
 	player_2 = Player()
 	player_3 = Player()
+	dealer = Dealer()
+
+	players = [player_1, player_2, player_3]
+	pool = cycle(lst)
+
+	for item in pool:
+		if (item == pool[0]):
+			player_num = 1
+		elif (item == pool[1]):
+			player_num = 2
+		else:
+			player_num = 3
+		item.initial_deal(img_rec, player_num)
+		
 
 	player_1.deposit()
 	player_1.print_connection_info()
@@ -155,11 +191,6 @@ def main():
 	player_1_deposit = 0
 	player_2_deposit = 0
 	player_3_deposit = 0
-
-	    # Deal
-	player_1_deal = 0
-	player_2_deal = 0
-	player_3_deal = 0
 
 	    # Stay
 	player_1_stay = 0
