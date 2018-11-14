@@ -63,12 +63,12 @@ class Player:
 
 	def calculate_winning(self):
 	
-		if (win_lose == 4):  # blackjack
-			self.winnings = bet_amount + (bet_amount * 1.5)
-		elif (win_lose == 3):  # even
-			self.winnings = bet_amount
-		elif (win_lose == 1):  # win
-			self.winnings = bet_amount * 2
+		if (self.win_lose == 4):  # blackjack
+			self.winnings = self.bet_amount + (self.bet_amount * 1.5)
+		elif (self.win_lose == 3):  # even
+			self.winnings = self.bet_amount
+		elif (self.win_lose == 1):  # win
+			self.winnings = self.bet_amount * 2
 		else:  # lose
 			self.winnings = 0
 
@@ -77,51 +77,69 @@ class Player:
 		
 	def hit(self, hand):
 		
-		# hand is a string that returns all players' cards (ex. "Player 1: A 10 \n Player 2: 4 J 6 \n Player 3: 10 K")
-		# need to parse string and turn each player's cards into a list
-		self.hand_values = list(hand)  # temp
-		score = sum(self.hand_values)
-		if (score == 21):
-			gameOver = True
-		elif (score > 21):
-			gameOver = True
+		self.get_score(hand, player_num)
+		if (self.score == 21):
+			self.gameOver = True
+		elif (self.score > 21):
+			self.gameOver = True
 		else:
-			print("player x score: {0}".format(score))
+			print("player {0} score: {1}".format(player_num, self.score))
 	
-	def initial_deal(self, hand, player_num):
+	def get_score(self, hand, player_num):
 		
-		# hand is a string that returns all players' first two cards (ex. "Player 1: A 10 \nPlayer 2: 4 J \nPlayer 3: 10 K ")
-		# need to parse string and turn each player's cards into a list
+		# hand is a string that returns all players' first two cards (ex. "Player 1: AT \nPlayer 2: 4J \nPlayer 3: TK ")
 		if (player_num == 1):
-			hand, sep, tail = hand.partition('Player 2: ')
+			hand, sep, tail = hand.partition(' \nPlayer 2: ')
 			head, sep, hand = hand.partition(': ')
 		elif (player_num == 2):
+			head, sep, hand = hand.partition('Player 2: ')
+			hand, sep, tail = hand.partition(' \nPlayer 3: ')
 		elif (player_num == 3):
-		self.hand_values = list(hand)  # temp
-		score = sum(self.hand_values)
-		if (score == 21):
-			gameOver = True
+			head, sep, hand = hand.partition('Player 3: ')
+			hand, sep, tail = hand.partition(' \n')
+		self.hand_values = list(hand)
+		temp = 0
+		for n, x in enumerate(self.hand_values):
+			if (x == 'A'):
+				self.hand_values[n] = '11'
+				temp = temp+1  # keep track of how many aces
+			elif (x == 'T' or x == 'J' or x == 'Q' or x == 'K'):
+				self.hand_values[n] = '10'
+		self.hand_values = list(map(int, self.hand_values))
+		self.score = sum(self.hand_values)
+		while (self.score > 21):  # change values of aces to 1 if they make score greater than 21 as 11s
+			if(temp > 0):
+				self.score = self.score-10
+				temp = temp-1
+			    
+	def initial_deal(self, hand, player_num):
+		
+		self.get_score(hand, player_num)
+		if (self.score == 21):
+			self.gameOver = True
+			self.win_lose = 3  # blackjack
 		else:
-			print("player x score: {1}".format(score))
+			print("player {0} score: {1}".format(player_num, self.score))
 		
 		
 	def gameover(self):
 		
-		if (score == Dealer.score):
-			win_lose = 3  # blackjack
-			calculate_winning()
-			balance = balance + self.winnings
-		elif (win_lose == 4):  # even
-			calculate_winning()
-			balance = balance + self.winnings
-		elif (score > Dealer.score and score <= 21):
-			win_lose = 1  # win
-			calculate_winning()
-			balance = balance + self.winnings
+		if (self.win_lose == 3): # blackjack
+			self.calculate_winning()
+			if (self.score == Dealer.score):
+				self.win_lose = 4  # even
+			self.balance = self.balance + self.winnings
+		elif (self.win_lose == 4):  # even
+			self.calculate_winning()
+			self.balance = self.balance + self.winnings
+		elif (self.score > Dealer.score and self.score <= 21):
+			self.win_lose = 1  # win
+			self.calculate_winning()
+			self.balance = self.balance + self.winnings
 		else:
-			win_lose = 2  # lose
-			calculate_winning()
-			balance = balance + self.winnings
+			self.win_lose = 2  # lose
+			self.calculate_winning()
+			self.balance = self.balance + self.winnings
 
 class Dealer:
 
@@ -160,9 +178,9 @@ def main():
 	Player_3_stay = GPIO.input(21)
 	Player_3_withdraw = GPIO.input(23)
 
-	img_rec = "Player 1: A Q\nPlayer2: J 5\nPlayer 3: 7 2"
-
-    #while True:
+	# temp string
+	img_rec = "Player 1: AQ \nPlayer2: J5 \nPlayer 3: 72 \n"
+	
         # Initializing players
 	player_1 = Player()
 	player_2 = Player()
@@ -172,15 +190,60 @@ def main():
 	players = [player_1, player_2, player_3]
 	pool = cycle(lst)
 
-	for item in pool:
-		if (item == pool[0]):
+	for item in players:
+		if (item == players[0]):
 			player_num = 1
-		elif (item == pool[1]):
+		elif (item == players[1]):
 			player_num = 2
 		else:
 			player_num = 3
 		item.initial_deal(img_rec, player_num)
-		
+	
+	for item in pool:
+		while True: 
+			if (item == pool[0]):
+				if Player_1_hit != 0:
+					player_1.hit()
+					break
+				if Player_1_stay != 0:
+					player_1.stay()
+					break
+				"""
+				if (item.gameOver == True):
+					item.gameover()
+					if Player_1_withdraw != 0:
+						player_1.withdraw()
+						break
+				"""
+			elif (item == pool[1]):
+				if Player_2_hit != 0:
+					player_2.hit()
+					break
+				if Player_2_stay != 0:
+					player_2.stay()
+					break
+				"""
+				if (item.gameOver == True):
+					item.gameover()
+					if Player_2_withdraw != 0:
+						player_2.withdraw()
+						break
+				"""
+			elif (item == pool[2]):
+				if Player_3_hit != 0:
+					player_3.hit()
+					break
+				if Player_3_stay != 0:
+					player_3.stay()
+					break
+				"""
+				if (item.gameOver == True):
+					item.gameover()
+					if Player_3_withdraw != 0:
+						player_3.withdraw()
+						break
+				"""
+			# still need Dealer at end of game, then restart game
 
 	player_1.deposit()
 	player_1.print_connection_info()
@@ -191,32 +254,7 @@ def main():
 	player_1_deposit = 0
 	player_2_deposit = 0
 	player_3_deposit = 0
-
-	    # Stay
-	player_1_stay = 0
-	player_2_stay = 0
-	player_3_stay = 0
 	
-	if Player_1_hit != 0:
-		player_1.hit()
-	if Player_2_hit != 0:
-		player_2.hit()
-	if Player_3_hit != 0:
-		player_3.hit()
-	
-	if Player_1_stay != 0:
-		player_1.stay()
-	if Player_2_stay != 0:
-		player_2.stay() 
-	if Player_3_stay != 0:
-		player_3.stay() 
-
-	if Player_1_withdraw != 0:
-		player_1.withdraw() 
-	if Player_2_withdraw != 0:
-		player_2.withdraw() 
-	if Player_3_withdraw != 0:
-		player_3.withdraw() 
 					
 if __name__ == "__main__":
     main()
