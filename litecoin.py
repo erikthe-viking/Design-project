@@ -23,14 +23,18 @@ class Player:
 	gameOver = False
 	balance = 10	
 	score = 0
-
+	wallet = PrivateKeyTestnet(key_val)
 	def print_connection_info(self):
-		a = PrivateKeyTestnet(self.key_val)
-		x = a.get_transactions()
+	#	a = PrivateKeyTestnet(self.key_val)
+#		g = PrivateKeyTestnet()
+#		print(g.address)
+		x = self.wallet.get_transactions()
 		## print(test.address)
-		self.balance = a.get_balance('usd')
+		self.balance = self.wallet.get_balance("usd")
+	#	test = self.wallet.send([('mm3Mvf1kdGhnx9AyCRFi4JKEH6sjFMZ1N7',17, 'usd')],combine=False)
+	#	print(test)
 		print("Balance: $", self.balance)
-		print("Address: ", a.address)
+		print("Address: ", self.wallet.address)
 		print("Return Address: ",self.return_address)
 		print("Key Value: ", self.key_val)
 		print("Previous Transactions: ", x)
@@ -48,12 +52,13 @@ class Player:
             
 
 	def withdraw(self):
- 
-		key = PrivateKeyTestnet(self.key_val)
-
-		if self.winnings <= self.balance:
+	
+		win = float(self.winnings)
+		bal = float(self.balance)
+		
+		if win <= bal:
 			print ("The withdrawl address is valid")
-			key.create_transaction([(self.return_address, self.winnings, 'usd')])
+			self.wallet.create_transaction([(self.return_address,win, 'usd')],combine=False)
 		else:
 			print ("Not in enough coins in balance")
 
@@ -97,7 +102,7 @@ def main():
 	player_2 = Player()
 	player_3 = Player()
 
-	player_1.deposit()
+	#layer_1.deposit()
 	player_1.print_connection_info()
 	    #player_1.withdraw()
 	    # Button Press stubs
@@ -140,4 +145,5 @@ def main():
 					
 if __name__ == "__main__":
     main()
+
 
