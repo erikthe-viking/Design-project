@@ -252,6 +252,7 @@ def main():
 	Dealer.initial_deal(hand)
 			
 	# cycling through hits and stays
+	# need to wait for input / timing
 	for item in pool:
 		while True: 
 			if (item == pool[0]):
