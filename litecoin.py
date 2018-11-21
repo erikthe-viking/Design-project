@@ -24,15 +24,11 @@ class Player:
 	balance = 10	
 	score = 0
 	wallet = PrivateKeyTestnet(key_val)
+	
 	def print_connection_info(self):
-	#	a = PrivateKeyTestnet(self.key_val)
-#		g = PrivateKeyTestnet()
-#		print(g.address)
+	
 		x = self.wallet.get_transactions()
-		## print(test.address)
 		self.balance = self.wallet.get_balance("usd")
-	#	test = self.wallet.send([('mm3Mvf1kdGhnx9AyCRFi4JKEH6sjFMZ1N7',17, 'usd')],combine=False)
-	#	print(test)
 		print("Balance: $", self.balance)
 		print("Address: ", self.wallet.address)
 		print("Return Address: ",self.return_address)
@@ -104,7 +100,7 @@ def main():
 
 	#layer_1.deposit()
 	player_1.print_connection_info()
-	    #player_1.withdraw()
+#	player_1.withdraw()
 	    # Button Press stubs
 
 	    # Deposits
@@ -137,11 +133,14 @@ def main():
 		player_3.stay() 
 
 	if Player_1_withdraw != 0:
-		player_1.withdraw() 
+	#	player_1.withdraw() 
+		pass
 	if Player_2_withdraw != 0:
-		player_2.withdraw() 
+	#	player_2.withdraw() 
+		pass
 	if Player_3_withdraw != 0:
-		player_3.withdraw() 
+	#	player_3.withdraw() 
+		pass
 					
 if __name__ == "__main__":
     main()
