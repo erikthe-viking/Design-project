@@ -6,7 +6,7 @@ from bit.network import get_fee, get_fee_cached, NetworkAPI, satoshi_to_currency
 import ASUS.GPIO as GPIO
 import time
 import os
-
+import blockcypher
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -24,10 +24,15 @@ class Player:
 	balance = 10	
 	score = 0
 	wallet = PrivateKeyTestnet(key_val)
-	
+	sender_address = "msmoicrcYXmzDQtyv21uKRQrFjdnTDnxbP"
+	win_lose = False	
+	transaction_size = 0
+
 	def print_connection_info(self):
 	
 		x = self.wallet.get_transactions()
+		self.transaction_size = len(x)
+#		print(len(x))
 		self.balance = self.wallet.get_balance("usd")
 		print("Balance: $", self.balance)
 		print("Address: ", self.wallet.address)
@@ -37,15 +42,23 @@ class Player:
  
 
 	def deposit(self):
-		key_class = PrivateKeyTestnet(self.key_val)
-		tran = key_class.get_transactions()
-		if len(tran) > 0:
-			if tran[0] != self.return_address:
-				self.return_address = tran[0]
-               # prin://www.maac.com/texas/dallas/post-addison-circlet (self.address)
-		else:
-			print ("weiner")
-            
+		
+				
+		x = self.wallet.get_transactions()
+		
+		if len(x) > self.transaction_size:
+			print("Deposit Recieved")		
+			self.transaction_size = len(x)		
+			test = blockcypher.get_transaction_details(x[0],coin_symbol="btc-testnet",api_key="b0c2292b9bc84058adba7f8bd4bf2698")
+			a = test['outputs']
+			print(a[0]['value'])
+			self.bet_ammount = a[0]['value']
+
+
+
+	def test_w(self):
+        	a = self.wallet.send([(self.sender_address,3, 'usd')],combine=False)
+        	print(a)
 
 	def withdraw(self):
 	
@@ -69,6 +82,7 @@ class Player:
 
 def main():
 
+#	blockcypher.get_token_info("b0c2292b9bc84058adba7f8bd4bf2698")
 	# Button GPIO pins
 	GPIO.setup(3,GPIO.IN)# Player 1 blue
 	GPIO.setup(5,GPIO.IN)# Player 1 yellow
@@ -95,11 +109,16 @@ def main():
     #while True:
         # Initializing players
 	player_1 = Player()
+
+	player_1.print_connection_info()
+	while True:
+		player_1.deposit()
+#	player_1.test_w()
 	player_2 = Player()
 	player_3 = Player()
 
 	#layer_1.deposit()
-	player_1.print_connection_info()
+#	player_1.print_connection_info()
 #	player_1.withdraw()
 	    # Button Press stubs
 
