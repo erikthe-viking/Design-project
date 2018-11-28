@@ -249,13 +249,13 @@ def preprocess_card(contour, image):
         Qrank_roi = Qrank[y1:y1+h1, x1:x1+w1]
         Qrank_sized = cv2.resize(Qrank_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
         qCard.rank_img = Qrank_sized
-        cv2.imshow("Qrank_Sized", Qrank_sized)
+        #cv2.imshow("Qrank_Sized", Qrank_sized)
     if len(QrankR_cnts) != 0:
         x2,y2,w2,h2 = cv2.boundingRect(QrankR_cnts[0])
         QrankR_roi = QrankR[y2:y2+h2, x2:x2+w2]
         QrankR_sized = cv2.resize(QrankR_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
         qCard.suit_img = QrankR_sized
-        cv2.imshow("QrankR_Sized", QrankR_sized)
+        #cv2.imshow("QrankR_Sized", QrankR_sized)
 
     # Find suit contour and bounding rectangle, isolate and find largest contour
     #dummy, Qsuit_cnts, hier = cv2.findContours(Qsuit, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -313,7 +313,7 @@ def match_card(qCard, train_ranks, train_suits):
                         best_rank_diff_img = diff_img
                         best_rank_match_diff = suit_diff
                         best_rank_name = Trank.name
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
     # is still Unknown

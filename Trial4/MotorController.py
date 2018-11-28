@@ -1,5 +1,6 @@
 import ASUS.GPIO as GPIO
 import time
+import threading
 
 class MotorController:
 
@@ -18,6 +19,7 @@ class MotorController:
 
 #define flipper motor pin constants
         self.CardWheelStepPins = [13, 15, 16, 18]
+        self.TrackStepPins     = [19, 21, 22, 23]
 
 #define stepper motor sequence
         self.StepSequence = [[1,0,0,1],
@@ -47,6 +49,10 @@ class MotorController:
         GPIO.setup(self.BaseEnablePin, GPIO.OUT)
 
         for pin in self.CardWheelStepPins:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, False)
+
+        for pin in self.TrackStepPins:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, False)
 
@@ -86,36 +92,87 @@ class MotorController:
             time.sleep(0.005)
             GPIO.output(self.BaseStepPin, False)
 
-    def RotateCardWheel(self, numDegrees, direction, stepDelay):
+    def RotateStepper(self, motorName, numDegrees, direction, stepDelay):
+        print("running", motorName, direction, "by", numDegrees, stepDelay)
+        if motorName == "card wheel":
+            stepperPinList = self.CardWheelStepPins
+        elif motorName == "track":
+            stepperPinList = self.TrackStepPins
+
         numSteps = int(round(numDegrees / 5.625 * 8))
         for i in range (numSteps):
             if direction == "clockwise":
                 for j in range(8):
-                    self.SetFlipperPins(self.StepSequence[j][0],
-                                        self.StepSequence[j][1],
-                                        self.StepSequence[j][2],
-                                        self.StepSequence[j][3])
+                    self.SetStepperMotorPins(stepperPinList, self.StepSequence[j][0],
+                                                        self.StepSequence[j][1],
+                                                        self.StepSequence[j][2],
+                                                        self.StepSequence[j][3])
                     time.sleep(stepDelay)
             else:
                 for j in reversed(range(8)):
-                    self.SetFlipperPins(self.StepSequence[j][0],
-                                        self.StepSequence[j][1],
-                                        self.StepSequence[j][2],
-                                        self.StepSequence[j][3])
+                    self.SetStepperMotorPins(stepperPinList, self.StepSequence[j][0],
+                                                        self.StepSequence[j][1],
+                                                        self.StepSequence[j][2],
+                                                        self.StepSequence[j][3])
                     time.sleep(stepDelay)
 
 
-    def SetFlipperPins(self, pin1, pin2, pin3, pin4):
-        GPIO.output(self.CardWheelStepPins[0], pin1)
-        GPIO.output(self.CardWheelStepPins[1], pin2)
-        GPIO.output(self.CardWheelStepPins[2], pin3)
-        GPIO.output(self.CardWheelStepPins[3], pin4)
+    def PrimeTrack(self):
+        cardWheelThread = threading.Thread(target=self.RotateStepper,
+                                           args=("card wheel", 440, "counterclockwise", 0.001))
+        trackThread = threading.Thread(target=self.RotateStepper,
+                                           args=("track", 440, "counterclockwise", 0.001))
+        cardWheelThread.start()
+        trackThread.start()
 
+        cardWheelThread.join()
+        trackThread.join()
 
+    def DealCard(self):
+        cardWheelThread = threading.Thread(target=self.RotateStepper,
+                                           args=("card wheel", 220, "counterclockwise", 0.001))
+        trackThread = threading.Thread(target=self.RotateStepper,
+                                           args=("track", 220, "counterclockwise", 0.001))
+        cardWheelThread.start()
+        trackThread.start()
+
+        cardWheelThread.join()
+        trackThread.join()
+
+    def SetStepperMotorPins(self, pinArray, pin1Val, pin2Val, pin3Val, pin4Val):
+        GPIO.output(pinArray[0], pin1Val)
+        GPIO.output(pinArray[1], pin2Val)
+        GPIO.output(pinArray[2], pin3Val)
+        GPIO.output(pinArray[3], pin4Val)
+
+    def cleanup(self):
+        GPIO.output(self.ShufflerPWMPin, False)
+        GPIO.output(self.ShufflerIn1Pin, False)
+        GPIO.output(self.ShufflerIn2Pin, False)
+
+        for pin in self.CardWheelStepPins:
+            GPIO.output(pin, False)
+
+        for pin in self.TrackStepPins:
+            GPIO.output(pin, False)
 
 def main():
     motorController = MotorController()
-    motorController.RotateCardWheel(360, "counterclockwise", 0.001)
+    #motorController.RotateStepper("track", 720, "counterclockwise", 0.001)
+    #motorController.RotateStepper("card wheel", 360, "counterclockwise", 0.001)
+    stepDelay = 0.001
+    numDegrees = 220
+    cardWheelThread = threading.Thread(target=motorController.RotateStepper,
+                                       args=("card wheel", numDegrees, "counterclockwise", stepDelay))
+    trackThread = threading.Thread(target=motorController.RotateStepper,
+                                       args=("track", numDegrees, "counterclockwise", stepDelay))
+    cardWheelThread.start()
+    trackThread.start()
+
+    cardWheelThread.join()
+    trackThread.join()
+
+    motorController.cleanup()
 
 if __name__ == "__main__":
     main()
