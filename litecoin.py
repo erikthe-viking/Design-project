@@ -27,6 +27,20 @@ class Player:
 	score = 0
 	hand_values = [None] * 10
 	a = PrivateKeyTestnet(self.key_val)
+	
+	def reset(self):
+		
+		return_address = 'mfhndBrGKSXuLgd8RbWcxkhQGSBqwQXVF2'
+		key_val = '92DTyQmsrsy4yWUvHpdyjPsF7WxDd6E13g43DXnyTthF3UrgfS3'
+		bet_amount = 0
+		winnings = 1
+		# 0 = still playing, 1 = win, 2 = lose, 3 = even, 4 = blackjack
+		win_lose = 0
+		gameOver = False
+		balance = 10	
+		score = 0
+		hand_values = [None] * 10
+		a = PrivateKeyTestnet(self.key_val)
 
 	def print_connection_info(self):
 		
@@ -88,18 +102,11 @@ class Player:
 			print("player {0} score: {1}".format(player_num, self.score))
 	
 	# get score of current hand
-	def get_score(self, hand, player_num):
+	def get_score(self, hand):
 		
-		# hand is a string that returns all players' first two cards (ex. "Player 1: AT \nPlayer 2: 4J \nPlayer 3: TK ")
-		if (player_num == 1):
-			hand, sep, tail = hand.partition(' \nPlayer 2: ')
-			head, sep, hand = hand.partition(': ')
-		elif (player_num == 2):
-			head, sep, hand = hand.partition('Player 2: ')
-			hand, sep, tail = hand.partition(' \nPlayer 3: ')
-		elif (player_num == 3):
-			head, sep, hand = hand.partition('Player 3: ')
-			hand, sep, tail = hand.partition(' \n')
+		# hand is a string that returns all players' first two cards (ex. "Player: A7 \n Dealer: QQ \n")
+		head, sep, hand = hand.partition('Player: ')
+		hand, sep, tail = hand.partition(' \n Dealer')
 		self.hand_values = list(hand)
 		temp = 0
 		for n, x in enumerate(self.hand_values):
@@ -116,27 +123,27 @@ class Player:
 				temp = temp-1
 				
 	# first deal (2 cards each)	    
-	def initial_deal(self, hand, player_num):
+	def initial_deal(self, hand):
 		
-		self.get_score(hand, player_num)
+		self.get_score(hand)
 		if (self.score == 21):
 			self.gameOver = True
 			self.win_lose = 3  # blackjack
 		else:
-			print("player {0} score: {1}".format(player_num, self.score))
+			print("score: {1}".format(self.score))
 		
 		
-	def gameover(self):
+	def gameover(self, blackjack_bool, dealer_score):
 		
 		if (self.win_lose == 4): # blackjack
-			if (Dealer.blackjack == True):
+			if (blackjack_bool == True):
 				self.win_lose = 3  # even
 			self.calculate_winning()
 			self.balance = self.balance + self.winnings
 		elif (self.win_lose == 3):  # even
 			self.calculate_winning()
 			self.balance = self.balance + self.winnings
-		elif (self.score > Dealer.score and self.score <= 21):
+		elif (self.score > dealer_score and self.score <= 21):
 			self.win_lose = 1  # win
 			self.calculate_winning()
 			self.balance = self.balance + self.winnings
@@ -152,6 +159,13 @@ class Dealer:
 	gameOver = False
 	score = 0
 	blackjack = False
+	
+	def reset(self):
+		return_address = 'mfhndBrGKSXuLgd8RbWcxkhQGSBqwQXVF2'
+		key_val = '92DTyQmsrsy4yWUvHpdyjPsF7WxDd6E13g43DXnyTthF3UrgfS3'
+		gameOver = False
+		score = 0
+		blackjack = False
 	
 	def initial_deal(self, hand):
 		
@@ -174,7 +188,7 @@ class Dealer:
 	
 	def get_score(self, hand):
 		
-		# hand is a string that returns all players' first two cards (ex. "Player 1: AT \nPlayer 2: 4J \nPlayer 3: TK \nDealer: QQ \n")
+		# hand is a string that returns all players' first two cards (ex. "Player: A7 \n Dealer: QQ \n")
 		head, sep, hand = hand.partition('Dealer: ')
 		hand, sep, tail = hand.partition(' \n')
 		self.hand_values = list(hand)
@@ -198,116 +212,53 @@ def main():
 	GPIO.setup(3,GPIO.IN)# Player 1 blue
 	GPIO.setup(5,GPIO.IN)# Player 1 yellow
 	GPIO.setup(7,GPIO.IN)# Player 1 white
-	GPIO.setup(11,GPIO.IN)# Player 2 blue
-	GPIO.setup(13,GPIO.IN)# Player 2 yellow
-	GPIO.setup(15,GPIO.IN)# Player 2 white
-	GPIO.setup(19,GPIO.IN)# Player 3 blue
-	GPIO.setup(21,GPIO.IN)# Player 3 yellow
-	GPIO.setup(23,GPIO.IN)# Player 3 white
 
 	# blue = hit, yellow = stay, white = withdraw
 	Player_1_hit = GPIO.input(3)
 	Player_1_stay = GPIO.input(5)
 	Player_1_withdraw = GPIO.input(7)
-	Player_2_hit = GPIO.input(11)
-	Player_2_stay = GPIO.input(13)
-	Player_2_withdraw = GPIO.input(15)
-	Player_3_hit = GPIO.input(19)
-	Player_3_stay = GPIO.input(21)
-	Player_3_withdraw = GPIO.input(23)
 
 	# temp string
-	img_rec = "Player 1: AQ \nPlayer 2: J5 \nPlayer 3: 72 \nDealer: "
+	img_rec = "Player 1: AQ \nDealer: T"
 	
         # Initializing players
 	player_1 = Player()
-	player_2 = Player()
-	player_3 = Player()
 	dealer = Dealer()
 
-	players = [player_1, player_2, player_3]
-	pool = cycle(players)
-	
 	# Scan QR-code
 	
-	# Start game once all players are in (even if not 3 players)
-	if Player_1_hit != 0 or Player_2_hit != 0 or Player_3_hit != 0:
-		# start game
-	
-	# for indicating which player
-	for item in players:
-		if (item == players[0]):
-			player_num = 1
-			# deal cards
-			item.initial_deal(img_rec, player_num)
-		elif (item == players[1]):
-			player_num = 2
-			# deal cards
-			item.initial_deal(img_rec, player_num)
-		else:
-			player_num = 3
-			# deal cards
-			item.initial_deal(img_rec, player_num)
-	# deal cards
-	Dealer.initial_deal(hand)
-			
-	# cycling through hits and stays
-	# need to wait for input / timing
-	for item in pool:
-		while True: 
-			if (item == pool[0]):
-				if Player_1_hit != 0:
-					# deal
-					item.hit()
-				if Player_1_stay != 0:
-					item.stay()
-				if (item.gameOver == True and pool[1].gameOver == True and pool[2].gameOver == True):
-					break
-				"""
-					if Player_1_withdraw != 0:
-						player_1.withdraw()
-						break
-				"""
-			elif (item == pool[1]):
-				if Player_2_hit != 0:
-					# deal
-					item.hit()
-				if Player_2_stay != 0:
-					item.stay()
-				if (item.gameOver == True and pool[0].gameOver == True and pool[2].gameOver == True):
-					break
-				"""
-					if Player_2_withdraw != 0:
-						player_2.withdraw()
-						break
-				"""
-			elif (item == pool[2]):
-				if Player_3_hit != 0:
-					# deal
-					item.hit()
-				if Player_3_stay != 0:
-					item.stay()
-				if (item.gameOver == True and pool[0].gameOver == True and pool[1].gameOver == True):
-					break
-				"""
-					if Player_3_withdraw != 0:
-						player_3.withdraw()
-						break
-				"""
-			# still need Dealer at end of game, then restart game
-	Dealer.initial_deal()
 	while True:
-		if (Dealer.gameOver == True):
+		player_1.reset()
+		dealer.reset()
+		# deal cards
+		dealer.initial_deal(hand)
+		player_1.initial_deal(hand)
+			
+		# allow hits until stay or bust
+		while (player_1_hit == 0 and player_1_stay == 0):
+			time.sleep(.001)
+		while (player_1.gameOver == False):
+			if Player_1_hit != 0:
+				# deal
+				player_1.hit()
+			if Player_1_stay != 0:
+				player_1.stay()
+			
+		# still need Dealer at end of game, then restart game
+		Dealer.initial_deal()
+		while True:
+			if (Dealer.gameOver == True):
+				break
+			elif (Dealer.score <= 16 or (Dealer.score == 17 and Dealer.aces > 0)):  # hit on 16 or soft 17
+				Dealer.hit()
+			else:
+				Dealer.gameOver == True
+		
+		player_1.gameover()
+		
+		if Player_1_withdraw != 0:
+			player_1.withdraw()
 			break
-		elif (Dealer.score <= 16 or (Dealer.score == 17 and Dealer.aces > 0)):  # hit on 16 or soft 17
-			Dealer.hit()
-		else:
-			Dealer.gameOver == True
-	
-	for item in pool:
-		item.gameover()
-	
-	# do withdraw
 	
 	player_1.deposit()
 	player_1.print_connection_info()
@@ -316,9 +267,6 @@ def main():
 
 	    # Deposits
 	player_1_deposit = 0
-	player_2_deposit = 0
-	player_3_deposit = 0
-	
-					
+			
 if __name__ == "__main__":
     main()
