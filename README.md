@@ -9,7 +9,7 @@ https://github.com/jcsaaddupuy/dogecoin-python
 
 https://github.com/martinabeleda/Blackjack-Tracker
 
-Phone wallet: mgrLnEH453rCP8fGtKDLarPH6E6uHegtkD
+Phone wallet: muUgfcryAhQTL4mFaub5CFGgypZ6sdzdGD
 
 Tinkerboard wallet: mgrLnEH453rCP8fGtKDLarPH6E6uHegtkD
 
